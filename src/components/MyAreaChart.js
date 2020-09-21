@@ -47,7 +47,7 @@ export const MyAreaChart = (props) => {
   // sets the data to be displayed as data from the API
   var data = db;
 
-  // This just formats all the dates from the file from ISO format to YYYY-MM-DD format which makes it easier to read for the user
+  // This just formats  all the dates from the file from ISO format to YYYY-MM-DD format which makes it easier to read for the user
   function formatdate() {
     moment().format();
     for (var i = 0; i < data.length; i++) {

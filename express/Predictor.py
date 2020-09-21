@@ -7,7 +7,7 @@ from sklearn.metrics import mean_absolute_error
 
 def inSample(path):
     # load data
-    df = read_csv(path, header=0)
+    df = read_csv(path)
     # prepare expected column names
     df.columns = ['ds', 'y']
     df['ds']= to_datetime(df['ds'])
@@ -34,7 +34,7 @@ def inSample(path):
 def outSample(path):
     # evaluate prophet time series forecasting model on hold out dataset
     # load data
-    df = read_csv(path, header=0)
+    df = read_csv(path)
     # prepare expected column names
     df.columns = ['ds', 'y']
     df['ds']= to_datetime(df['ds'])
@@ -67,6 +67,7 @@ def outSample(path):
     pyplot.show()
 
 path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/monthly-car-sales.csv'
-# inSample(path)
-outSample(path)
+path2 = '/Users/samir/Documents/A-Level/Computer Science A-Level/Coursework/Project/Initial Testing/test2/express/local.csv'
+inSample("local.csv")
+# outSample(path)
 
