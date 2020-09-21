@@ -30,17 +30,7 @@ headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleW
 }
 response = requests.get(url=url, headers=headers)
 print(response)
-# mydata = json.load(requests.get(url=url, headers=headers)
 
-# csvinsert()
-# def formatjson():
-#     ranger = len(mydata)
-#     for x in range(ranger):
-#         mydata["ProductActivity"][x] == "null"
-#     return mydata 
-
-# mydata = json.load("./testdata.json")
-# print(len(mydata))
 
 averagedata = [
         [
@@ -445,17 +435,7 @@ averagedata = [
         ]
       ]
 
-# def csvinsert():
-#     fname = "local.csv"
-#     # thisdata = formatjson()
-#     with open(fname, "w") as file:
-#         csv_file = csv.writer(file)
-#         csv_file.writerow(["date", "price"])
-#         for item in thisdata:
-#             csv_file.writerow([thisdata[item]["createdAt"], thisdata[item]["localAmount"]])
-#             print("item ", item, "added")
-
-def csvinsert2():
+def csvinsert():
     fname = "local.csv"
     with open(fname, "w") as file:
         csv_file = csv.writer(file)
@@ -464,5 +444,5 @@ def csvinsert2():
             csv_file.writerow([averagedata[x][0], averagedata[x][1]])
             print("item", x, "added")
         
-csvinsert2()
+csvinsert()
 

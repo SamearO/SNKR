@@ -4,10 +4,29 @@ from pandas import DataFrame
 from fbprophet import Prophet
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error
+import csv
+
+def alterdates(path):
+    df = read_csv(path)
+    with open(path, 'r') as file:
+        data = [row for row in csv.reader(path)]
+        for x in range(len(df["Date"])):
+            newdate = to_datetime(data[0][x])
+            file.set_value(x, "Date", newdate)
+            print("date", x, "altered")
+    file.close()
+    df = read_csv(path)
+    # for x in range(len(df["Date"]) -1 ):
+    #     newdate = to_datetime(df["Date"][x])
+    #     df.set_value(x, "Date", newdate)
+    #     print("date", x, "altered")
+    print(df.head(3))
+
 
 def inSample(path):
     # load data
     df = read_csv(path)
+    alterdates(path)
     # prepare expected column names
     df.columns = ['ds', 'y']
     df['ds']= to_datetime(df['ds'])
@@ -66,8 +85,18 @@ def outSample(path):
     pyplot.legend()
     pyplot.show()
 
+def testy(path):
+    # load data
+    df = read_csv(path)
+    alterdates(path)
+    # plot the time series
+    df.plot()
+    pyplot.show()
+
+
 path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/monthly-car-sales.csv'
 path2 = '/Users/samir/Documents/A-Level/Computer Science A-Level/Coursework/Project/Initial Testing/test2/express/local.csv'
-inSample("local.csv")
+# inSample("local.csv")
+# testy("local.csv")
+alterdates("local.csv")
 # outSample(path)
-

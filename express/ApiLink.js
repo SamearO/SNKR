@@ -190,7 +190,9 @@ export function updateProduct(product) {
     
 export function updateDbFromApi1(names){
     for(var i = 0; i < names.length; i++){
+      setTimeout(function() {
         updateProduct(names[i])
+      }, 1000 * 1);
         var today = new Date();
         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
