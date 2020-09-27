@@ -1,62 +1,6 @@
-// import { Grid } from "@material-ui/core";
-// import React from "react";
-// import Paper from "@material-ui/core/Paper";
-// import { makeStyles } from "@material-ui/core/styles";
-// import MyAreaChart from "./MyAreaChart.js";
-// import Filter from "./Filter.js";
-// import moment from "moment";
 
-// // styling (CSS)
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     flexGrow: 1,
-//   },
-//   paper: {
-//     padding: theme.spacing(2),
-//     textAlign: "center",
-//     color: theme.palette.text.secondary,
-//   },
-// }));
-
-// // Grid Function; allocates space for components
-// export default function CenteredGrid() {
-//   const classes = useStyles();
-
-//   // this block of code finds the date of one day in the future to make sure the graph is showing all results as default
-//   const today = new Date();
-//   var tomorrow = new Date(today + 1);
-//   tomorrow = moment(tomorrow).format("YYYY-MM-DD");
-
-//   // sets the size hook to 0 (all sizes) as defualt
-//   const [size, setSize] = React.useState(0);
-
-//   // sets the date hook to the date of tommorow to ensure that all results are shown as default
-//   const [date, setDate] = React.useState(tomorrow);
-
-//   return (
-//     <div className={classes.root}>
-//       <Grid container spacing={3}>
-//         <Grid item xs={4}>
-//           <Paper className={classes.paper}>
-//             <Filter
-//               size={size}
-//               setSize={setSize}
-//               date={date}
-//               setDate={setDate}
-//             />
-//           </Paper>
-//         </Grid>
-//         <Grid item xs={12}>
-//           <Paper className={classes.paper}>
-//             <MyAreaChart size={size} date={date} />
-//           </Paper>
-//         </Grid>
-//       </Grid>
-//     </div>
-//   );
-// }
 import { Grid } from "@material-ui/core";
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
@@ -74,6 +18,8 @@ import styles from "././imported/assets/jss/material-dashboard-react/cardImagesS
 import Button from "././imported/CustomButtons/Button.js";
 
 const useStyles = makeStyles(styles);
+const axios = require("axios");
+
 
 // Grid Function; allocates space for components
 export default function CenteredGrid() {
@@ -93,6 +39,32 @@ export default function CenteredGrid() {
   const [endDate, setEndDate] = React.useState(tomorrow);
 
   const [startDate, setStartDate] = React.useState(start);
+
+    // attribute hook initialised
+    const [attributes, setAttributes] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+
+    // url for my attribute API endpoint
+    const attributeUrl = "http://localhost:5000/api/attributes"
+  
+    // this code sets the attribute hook to data from my api
+    useEffect(() => {
+      setLoading(true)
+      axios
+        .get(attributeUrl)
+        .then((res) => {
+          setAttributes(res.data.attributes);
+          setLoading(false)
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, [setAttributes]); 
+
+    // setTimeout(function() {
+    //   console.log("debug", attributes[2]["volatility"])
+    // }, 100);
+    
 
   return (
     <div
@@ -117,6 +89,24 @@ export default function CenteredGrid() {
             </CardBody>
           </Card>
         </GridItem>
+
+        <GridItem xs={6} sm ={6} md={6}>
+          <Card style={{ width: "40rem"}}>
+            <CardHeader color="warning">
+              <h4>Volatility</h4>
+            </CardHeader>
+            <CardBody>
+              {/* {loading && <h1>loading...</h1>}
+              {
+                !loading && <h1>{attributes[2]["volatility"]}</h1>
+              } */}
+            </CardBody>
+          </Card>
+        </GridItem>
+        {loading && <h1>loading...</h1>}
+
+        {/* {loading && <h1>loading...</h1>}
+        {!loading && <h1>{attributes[2]["volatility"]}</h1> } */}
 
         <GridItem xs={6} sm={6} md={6}>
           <Card style={{ width: "40rem" }}>

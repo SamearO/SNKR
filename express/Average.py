@@ -25,11 +25,11 @@ def grabLocal():
 #     print("JSON data converted to CSV")
 #     print(df)
 
-url = "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/activity?state=480&currency=GBP&limit=1000&page=1&sort=createdAt&order=DESC&country=GB"
-headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
-}
-response = requests.get(url=url, headers=headers)
-print(response)
+# url = "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/activity?state=480&currency=GBP&limit=1000&page=1&sort=createdAt&order=DESC&country=GB"
+# headers = {"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
+# }
+# response = requests.get(url=url, headers=headers)
+# print(response)
 
 
 averagedata = [
@@ -444,5 +444,18 @@ def csvinsert():
             csv_file.writerow([averagedata[x][0], averagedata[x][1]])
             print("item", x, "added")
         
-csvinsert()
+# csvinsert()
+
+def grabApi(interval):
+  url = 'https://stockx.com/api/products/e2213059-bad6-4a09-8b3f-e78fe4013256/chart?start_date=all&end_date=2020-09-24&intervals=10000&format=highstock&currency=GBP&country=GB'
+  headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36'
+  }
+  response = requests.get(url=url, headers=headers)
+  print(response)
+
+# grabApi(1000)
+
+# def createframe()
+
 

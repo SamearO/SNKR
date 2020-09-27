@@ -14,28 +14,24 @@ import {
   Tooltip,
   Label,
 } from "recharts";
-// import { response } from "express";
 
 const axios = require("axios");
 
 // sets data value to sale data part of json file
 var data = MyData["ProductActivity"];
 
-// url for my API endpoint
-const url = "http://localhost:5000/api/stockx";
-
 // code for area graph component with recharts module
 export const MyAreaChart = (props) => {
   // db hook initialised
   const [db, setDb] = React.useState([]);
-
+  
   // url for my API endpoint
-  const url = "http://localhost:5000/api/stockx";
+  const productUrl = "http://localhost:5000/api/sales";
 
   // this code sets the db hook to data from my api
   useEffect(() => {
     axios
-      .get(url)
+      .get(productUrl)
       .then((res) => {
         setDb(res.data.express);
       })

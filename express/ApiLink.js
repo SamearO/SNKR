@@ -188,17 +188,28 @@ export function updateProduct(product) {
         })
     }       
     
+// export function updateDbFromApi1(names){
+//     for(var i = 0; i < names.length; i++){
+//       setTimeout(function() {
+//         updateProduct(names[i])
+//       }, 1000 * 1);
+//         var today = new Date();
+//         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+//         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+//         var dateTime = date+' '+time;
+//         console.log("Product" ,i + 1, "Updated At:", dateTime)
+//     }
+// }
+
 export function updateDbFromApi1(names){
-    for(var i = 0; i < names.length; i++){
-      setTimeout(function() {
-        updateProduct(names[i])
-      }, 1000 * 1);
-        var today = new Date();
-        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        var dateTime = date+' '+time;
-        console.log("Product" ,i + 1, "Updated At:", dateTime)
-    }
+  for(var i = 0; i < names.length; i++){
+    updateProduct(names[i])
+    var today = new Date()
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
+    console.log("Product" ,i + 1, "Updated At:", dateTime)
+  }
 }
 
 // updates database with data which is passed

@@ -26,19 +26,17 @@ def alterdates(path):
 def inSample(path):
     # load data
     df = read_csv(path)
-    alterdates(path)
     # prepare expected column names
     df.columns = ['ds', 'y']
-    df['ds']= to_datetime(df['ds'])
+    df['ds']= to_datetime(df['ds'], unit = 'ms')
     # define the model
     model = Prophet()
     # fit the model
     model.fit(df)
     # define the period for which we want a prediction
     future = list()
-    for i in range(1, 13):
-        date = '1968-%02d' % i
-        future.append([date])
+    for x in range(10):
+        future.append(df['ds'][88 + x])
     future = DataFrame(future)
     future.columns = ['ds']
     future['ds']= to_datetime(future['ds'])
@@ -56,7 +54,7 @@ def outSample(path):
     df = read_csv(path)
     # prepare expected column names
     df.columns = ['ds', 'y']
-    df['ds']= to_datetime(df['ds'])
+    df['ds']= to_datetime(df['ds'], unit = 'ms')
     # create test dataset, remove last 12 months
     train = df.drop(df.index[-12:])
     print(train.tail())
@@ -66,9 +64,8 @@ def outSample(path):
     model.fit(train)
     # define the period for which we want a prediction
     future = list()
-    for i in range(1, 13):
-        date = '1968-%02d' % i
-        future.append([date])
+    for x in range(98):
+        future.append(df['ds'][x])
     future = DataFrame(future)
     future.columns = ['ds']
     future['ds'] = to_datetime(future['ds'])
@@ -77,8 +74,8 @@ def outSample(path):
     # calculate MAE between expected and predicted values for december
     y_true = df['y'][-12:].values
     y_pred = forecast['yhat'].values
-    mae = mean_absolute_error(y_true, y_pred)
-    print('MAE: %.3f' % mae)
+    # mae = mean_absolute_error(y_true, y_pred)
+    # print('MAE: %.3f' % mae)
     # plot expected vs actual
     pyplot.plot(y_true, label='Actual')
     pyplot.plot(y_pred, label='Predicted')
@@ -96,7 +93,7 @@ def testy(path):
 
 path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/monthly-car-sales.csv'
 path2 = '/Users/samir/Documents/A-Level/Computer Science A-Level/Coursework/Project/Initial Testing/test2/express/local.csv'
-# inSample("local.csv")
+inSample("local.csv")
 # testy("local.csv")
-alterdates("local.csv")
-# outSample(path)
+# alterdates("local.csv")
+# outSample("local.csv")

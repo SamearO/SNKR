@@ -15,12 +15,11 @@ const { response } = require("express");
 app.use(cors()); // Use this after the variable declaration
 
 // code for my api endpoint that displays data from my database
-app.get("/api/stockx", (req, res) => {
+app.get("/api/sales", (req, res) => {
   const sqlite3 = require("sqlite3").verbose();
   // open the database
   let db = new sqlite3.Database("stockx.db");
   // gets all data from ProductActivity table
-
   let sql = "SELECT * FROM PRODUCTACTIVITY";
   db.all(sql, [], (err, rows) => {
     if (err) {
@@ -32,6 +31,23 @@ app.get("/api/stockx", (req, res) => {
   db.close();
   // res.send({ express: hello() });
 });
+
+app.get("/api/attributes", (req, res) => {
+  const sqlite3 = require("sqlite3").verbose();
+  // open database
+  let db = new sqlite3.Database("stockx.db")
+  // gets all data from Product table
+  let sql = "SELECT * FROM PRODUCT"
+  db.all(sql, [], (err, rows) => {
+    if (err){
+      throw err
+    }
+    res.send({attributes: rows});
+  })
+  // close the database connection
+  db.close();
+
+})
 
 // post api route
 app.post("/api/world", (req, res) => {
