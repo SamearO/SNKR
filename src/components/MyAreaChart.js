@@ -24,22 +24,24 @@ var data = MyData["ProductActivity"];
 export const MyAreaChart = (props) => {
   // db hook initialised
   const [db, setDb] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   
   // url for my API endpoint
   const productUrl = "http://localhost:5000/api/sales";
 
   // this code sets the db hook to data from my api
   useEffect(() => {
+    setLoading(true)
     axios
       .get(productUrl)
       .then((res) => {
         setDb(res.data.express);
+        setLoading(false)
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
-
   // sets the data to be displayed as data from the API
   var data = db;
 
@@ -106,6 +108,10 @@ export const MyAreaChart = (props) => {
   Data.formatdate();
 
   console.log("Data being displayed:", data);
+
+  if(loading == true){
+    return <h2>Loading...</h2>
+  }
 
   return (
     // settings for the position and size of graph

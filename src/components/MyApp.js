@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
 import Filter from "./Filter.js";
 import moment from "moment";
+import volatility, { AttributeDisplay } from  "./Volatility.js"
 
 // core components
 // import Button from "./imported/CustomButtons/Button.js";
@@ -46,6 +47,7 @@ export default function CenteredGrid() {
 
     // url for my attribute API endpoint
     const attributeUrl = "http://localhost:5000/api/attributes"
+
   
     // this code sets the attribute hook to data from my api
     useEffect(() => {
@@ -59,12 +61,7 @@ export default function CenteredGrid() {
         .catch((err) => {
           console.log(err);
         });
-    }, [setAttributes]); 
-
-    // setTimeout(function() {
-    //   console.log("debug", attributes[2]["volatility"])
-    // }, 100);
-    
+    }, []); 
 
   return (
     <div
@@ -96,17 +93,11 @@ export default function CenteredGrid() {
               <h4>Volatility</h4>
             </CardHeader>
             <CardBody>
-              {/* {loading && <h1>loading...</h1>}
-              {
-                !loading && <h1>{attributes[2]["volatility"]}</h1>
-              } */}
+              <AttributeDisplay
+              attributes={attributes} loading={loading}></AttributeDisplay>
             </CardBody>
           </Card>
         </GridItem>
-        {loading && <h1>loading...</h1>}
-
-        {/* {loading && <h1>loading...</h1>}
-        {!loading && <h1>{attributes[2]["volatility"]}</h1> } */}
 
         <GridItem xs={6} sm={6} md={6}>
           <Card style={{ width: "40rem" }}>

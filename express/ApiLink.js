@@ -4,9 +4,10 @@ const axios = require("axios");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlite3 = require("sqlite3").verbose();
 
-// first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
+export class scraper{
+  // first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
 // could be very helpful when building a seach bar
-function searchBar(query) {
+static searchBar(query) {
   axios({
     method: "post",
     url:
@@ -31,37 +32,38 @@ function searchBar(query) {
 }
 
 // second route to search the stockX API, this is the route stockx uses to display products. Limit is 40, there are 25 'pages' of results
-const searchDirect = (query) => {
-    const xhr = new XMLHttpRequest();
-    const url = "https://stockx.com/api/browse?_search="+query;
-    const headers =  {
-        "user-agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-        "sec-fetch-dest": "none",
-        accept: "*/*",
-        "sec-fetch-site": "cross-site",
-        "sec-fetch-mode": "cors",
-        "accept-language": "en-US",
-      }
-    xhr.open("GET", url);
-    for(let key in headers){
-        xhr.setRequestHeader(key, headers[key]) 
-      }
-    xhr.send();
-    // function executes when the ready state is changed
-    xhr.onreadystatechange = (e) => {
-        // if the request is done and the server is returning an ok response then execute
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var data = JSON.parse(xhr.responseText)
-            console.log(data)
-        }
-        else{
-            console.log("server error")
-        }
+static searchDirect = (query) => {
+  const xhr = new XMLHttpRequest();
+  const url = "https://stockx.com/api/browse?_search="+query;
+  const headers =  {
+      "user-agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
+      "sec-fetch-dest": "none",
+      accept: "*/*",
+      "sec-fetch-site": "cross-site",
+      "sec-fetch-mode": "cors",
+      "accept-language": "en-US",
     }
+  xhr.open("GET", url);
+  for(let key in headers){
+      xhr.setRequestHeader(key, headers[key]) 
+    }
+  xhr.send();
+  // function executes when the ready state is changed
+  xhr.onreadystatechange = (e) => {
+      // if the request is done and the server is returning an ok response then execute
+      if (xhr.readyState == 4 && xhr.status == 200) {
+          var data = JSON.parse(xhr.responseText)
+          console.log(data)
+      }
+      else{
+          console.log("server error")
+      }
+  }
 }
+
 // this function takes product URL or the exact product name as a paramater, it then displays neccasary info about the product
-const grabProductInfo = (product) => {
+static grabProductInfo = (product) => {
   let webURL;
   if (typeof product == "string") {
     if (product.includes("stockx.com/"))
@@ -79,7 +81,7 @@ const grabProductInfo = (product) => {
       "user-agent":
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
       "sec-fetch-dest": "none",
-      accept: "*/*",
+      "accept": "*/*",
       "sec-fetch-site": "cross-site",
       "sec-fetch-mode": "cors",
       "accept-language": "en-US",
@@ -111,152 +113,139 @@ const grabProductInfo = (product) => {
     });
 }
 
-export function updateProduct(product) {
-    let webURL;
-    if (typeof product == "string") {
-        if (product.includes("stockx.com/"))
-        webURL = product.split("stockx.com/")[1].split("/")[0];
-        else webURL = product;
-    } 
-    // else webURL = product.urlKey;
-  axios({
-    method: "get",
-    url:
-      "https://stockx.com/api/products/" +
-      webURL +
-      "?includes=market&currency=GBP",
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-      "sec-fetch-dest": "none",
-      accept: "*/*",
-      "sec-fetch-site": "cross-site",
-      "sec-fetch-mode": "cors",
-      "accept-language": "en-US",
-    },
-  })
-    .then((res) => {
-        var data = res.data
-        const variants = data.Product.children;
-        var variantArray = [];
-        for (let key in variants) {
-            variantArray.push({
-                size: variants[key].shoeSize,
-                uuid: key,
-                market: variants[key].market,
-            });
-        }
-        var datatoupload = {
-            name: data["Product"].title,
-            image: data["Product"].media.imageUrl,
-            urlKey: data["Product"].urlKey,
-            pid: data["Product"].styleId,
-            uuid: data["Product"].uuid,
-            marketData: data["Product"].market,
-            variants: variantArray,
-        }
-        let db = new sqlite3.Database("stockx.db");
-        // the sql command which should be run
-        let sql =
-          "INSERT INTO PRODUCT (Id, Name, Pic_Link, Volatility, Sales_Last_72) VALUES (?,?,?,?,?)";
-        let datatoinsert = [
-            datatoupload.uuid,
-            datatoupload.name,
-            datatoupload.image,
-            datatoupload.marketData.volatility,
-            datatoupload.marketData.salesLast72Hours
-        ];
-        // this function executes the sql command using db.run
-        db.serialize(function () {
-            db.run(sql, datatoinsert, function (err) {
-                // error condition
-                if (err){
-                  if (err.code == 'SQLITE_BUSY') {
-                    console.log("Database is busy, retrying in 5 seconds...")
-                    setInterval ( function() { 
-                      updateProduct(product)
-                    }, 1000 * 5);
-                  }
-                  else{
-                    console.log(err)
-                  }
-                };
-            }
-            ,)});
-        }).catch((err) =>{
-            console.log(err)
-        })
-    }       
-    
-// export function updateDbFromApi1(names){
-//     for(var i = 0; i < names.length; i++){
-//       setTimeout(function() {
-//         updateProduct(names[i])
-//       }, 1000 * 1);
-//         var today = new Date();
-//         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-//         var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-//         var dateTime = date+' '+time;
-//         console.log("Product" ,i + 1, "Updated At:", dateTime)
-//     }
-// }
-
-export function updateDbFromApi1(names){
-  for(var i = 0; i < names.length; i++){
-    updateProduct(names[i])
-    var today = new Date()
-    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    var dateTime = date+' '+time;
-    console.log("Product" ,i + 1, "Updated At:", dateTime)
-  }
-}
-
-// updates database with data which is passed
-function updateProductActivity(apidata) {
-    const sqlite3 = require("sqlite3").verbose();
-    let db = new sqlite3.Database("stockx.db");
-    // the sql command which should be run
-    let sql =
-      "INSERT INTO PRODUCTACTIVITY (ProductActivity__chainId,ProductActivity__amount,ProductActivity__createdAt,ProductActivity__shoeSize,ProductActivity__productId,ProductActivity__skuUuid,ProductActivity__state,ProductActivity__localAmount,ProductActivity__localCurrency) VALUES (?,?,?,?,?,?,?,?,?)";
-    // for every object in apidata
-    for (var i = 0; i < apidata.length; i++) {
+static updateProduct(product) {
+  let webURL;
+  if (typeof product == "string") {
+      if (product.includes("stockx.com/"))
+      webURL = product.split("stockx.com/")[1].split("/")[0];
+      else webURL = product;
+  } 
+  // else webURL = product.urlKey;
+axios({
+  method: "get",
+  url:
+    "https://stockx.com/api/products/" +
+    webURL +
+    "?includes=market&currency=GBP",
+  headers: {
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
+    "sec-fetch-dest": "none",
+    // accept: "*/*",
+    // "sec-fetch-site": "cross-site",
+    // "sec-fetch-mode": "cors",
+    // "accept-language": "en-US",
+  },
+})
+  .then((res) => {
+      var data = res.data
+      const variants = data.Product.children;
+      var variantArray = [];
+      for (let key in variants) {
+          variantArray.push({
+              size: variants[key].shoeSize,
+              uuid: key,
+              market: variants[key].market,
+          });
+      }
+      var datatoupload = {
+          name: data["Product"].title,
+          image: data["Product"].media.imageUrl,
+          urlKey: data["Product"].urlKey,
+          pid: data["Product"].styleId,
+          uuid: data["Product"].uuid,
+          marketData: data["Product"].market,
+          variants: variantArray,
+      }
+      let db = new sqlite3.Database("stockx.db");
+      // the sql command which should be run
+      let sql =
+        "INSERT INTO PRODUCT (Id, Name, Pic_Link, Volatility, Sales_Last_72) VALUES (?,?,?,?,?)";
       let datatoinsert = [
-        apidata[i].chainId,
-        apidata[i].amount,
-        apidata[i].createdAt,
-        apidata[i].shoeSize,
-        apidata[i].productId,
-        apidata[i].skuUuid,
-        apidata[i].state,
-        apidata[i].localAmount,
-        apidata[i].localCurrency,
+          datatoupload.uuid,
+          datatoupload.name,
+          datatoupload.image,
+          datatoupload.marketData.volatility,
+          datatoupload.marketData.salesLast72Hours
       ];
       // this function executes the sql command using db.run
       db.serialize(function () {
-        db.run(sql, datatoinsert, function (err) {
-          // error condition
-          if (err){
-            if (err.code == 'SQLITE_BUSY') {
-              var isLocked = true
-              if(isLocked = true){
-                console.log("Database is busy, retrying in 5 seconds...")
-                setInterval ( function() { 
-                  updateProductActivity(apidata)
-                }, 1000 * 5);
-              } 
-            }
-            else{
-              console.log(err)
-            }
-          };
-        });
-      });
+          db.run(sql, datatoinsert, function (err) {
+              // error condition
+              if (err){
+                if (err.code == 'SQLITE_BUSY') {
+                  console.log("Database is busy, retrying in 5 seconds...")
+                  setInterval ( function() { 
+                    scraper.updateProduct(product)
+                  }, 1000 * 5);
+                }
+                else{
+                  console.log(err)
+                }
+              };
+          }
+          ,)});
+      }).catch((err) =>{
+          console.log(err)
+      })
+  }       
+
+  static updateDbFromApi1(names){
+    for(var i = 0; i < names.length; i++){
+      scraper.updateProduct(names[i])
+      var today = new Date()
+      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      var dateTime = date+' '+time;
+      console.log("Product" ,i + 1, "Updated At:", dateTime)
     }
   }
 
+  // updates database with data which is passed
+static updateProductActivity(apidata) {
+  const sqlite3 = require("sqlite3").verbose();
+  let db = new sqlite3.Database("stockx.db");
+  // the sql command which should be run
+  let sql =
+    "INSERT INTO PRODUCTACTIVITY (ProductActivity__chainId,ProductActivity__amount,ProductActivity__createdAt,ProductActivity__shoeSize,ProductActivity__productId,ProductActivity__skuUuid,ProductActivity__state,ProductActivity__localAmount,ProductActivity__localCurrency) VALUES (?,?,?,?,?,?,?,?,?)";
+  // for every object in apidata
+  for (var i = 0; i < apidata.length; i++) {
+    let datatoinsert = [
+      apidata[i].chainId,
+      apidata[i].amount,
+      apidata[i].createdAt,
+      apidata[i].shoeSize,
+      apidata[i].productId,
+      apidata[i].skuUuid,
+      apidata[i].state,
+      apidata[i].localAmount,
+      apidata[i].localCurrency,
+    ];
+    // this function executes the sql command using db.run
+    db.serialize(function () {
+      db.run(sql, datatoinsert, function (err) {
+        // error condition
+        if (err){
+          if (err.code == 'SQLITE_BUSY') {
+            var isLocked = true
+            if(isLocked = true){
+              console.log("Database is busy, retrying in 5 seconds...")
+              setInterval ( function() { 
+                updateProductActivity(apidata)
+              }, 1000 * 5);
+            } 
+          }
+          else{
+            console.log(err)
+          }
+        };
+      });
+    });
+  }
+}
+
 // this function grabs data from the stockx api, automatically filters already uploaded sales and then inserts filtered sales to the database
-export function updateDbFromApi2() {
+static updateDbFromApi2() {
   var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
   const xhr = new XMLHttpRequest();
   const url =
@@ -273,10 +262,8 @@ export function updateDbFromApi2() {
     if (xhr.readyState == 4 && xhr.status == 200) {
       // initialise myobj to the json response to the API
       var myobj = JSON.parse(xhr.responseText)["ProductActivity"];
-    //   for(var i = 0; i < myobj.length; i++){
-    //     updateProductActivity(myobj[i]);
-    //   }
-    updateProductActivity(myobj)
+      
+    scraper.updateProductActivity(myobj)
     var today = new Date();
     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -285,4 +272,4 @@ export function updateDbFromApi2() {
     }
   };
 }
-
+}

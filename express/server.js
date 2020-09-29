@@ -1,6 +1,6 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-import {updateDbFromApi2, updateDbFromApi1} from "./ApiLink.js"
+import {scraper} from "./ApiLink.js"
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -60,16 +60,16 @@ app.post("/api/world", (req, res) => {
 // this block of code automatically updates the database every hour and every 50 minutes
 const names = ["air-jordan-1-retro-high-light-smoke-grey", "air-jordan-1-retro-high-satin-snake-chicago-w", "air-jordan-1-retro-high-bred-toe", "nike-dunk-low-samba-2020", "adidas-yeezy-boost-350-v2-zyon"]
 setTimeout(function() {
-  updateDbFromApi1(names)
+  scraper.updateDbFromApi1(names)
 }, 1000 * 5);
 setTimeout(function() {
-  updateDbFromApi2()
+  scraper.updateDbFromApi2()
 }, 1000 * 60);
 setInterval ( function() { 
-  updateDbFromApi2()
+  scraper.updateDbFromApi2()
 }, 1000 * 60 * 60);
 setInterval ( function() { 
-  updateDbFromApi1(names)
+  scraper.updateDbFromApi1(names)
 }, 1000 * 60 * 50);
 
 
