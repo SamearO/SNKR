@@ -1,12 +1,13 @@
 
-import { Grid } from "@material-ui/core";
+import { CardContent, Grid } from "@material-ui/core";
 import React, {useState, useEffect} from "react";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
 import Filter from "./Filter.js";
 import moment from "moment";
-import volatility, { AttributeDisplay } from  "./Volatility.js"
+import VolatilityDisplay, { AttributeDisplay } from  "./Volatility.js"
+import {SalesLast72Display} from "./SalesLast72"
 
 // core components
 // import Button from "./imported/CustomButtons/Button.js";
@@ -66,7 +67,7 @@ export default function CenteredGrid() {
   return (
     <div
       style={{
-        backgroundColor: "lightblue",
+        backgroundColor: "#152028",
         width: "1859",
         height: "950px",
       }}
@@ -89,14 +90,27 @@ export default function CenteredGrid() {
 
         <GridItem xs={6} sm ={6} md={6}>
           <Card style={{ width: "40rem"}}>
-            <CardHeader color="warning">
+            <CardContent style={{backgroundColor: "#001a33"}}>
+            <CardHeader color="#152028">
               <h4>Volatility</h4>
             </CardHeader>
             <CardBody>
-              <AttributeDisplay
-              attributes={attributes} loading={loading}></AttributeDisplay>
+              <VolatilityDisplay></VolatilityDisplay>
+            </CardBody>
+            </CardContent>
+          </Card>
+        </GridItem>
+
+        <GridItem xs={6} sm={6} md={6}>
+          <Card style={{ width: "40rem"}}>
+            <CardHeader color="warning">
+              <h4>Sales In The Last 72 Hours</h4>
+            </CardHeader>
+            <CardBody>
+              <SalesLast72Display></SalesLast72Display>
             </CardBody>
           </Card>
+          
         </GridItem>
 
         <GridItem xs={6} sm={6} md={6}>

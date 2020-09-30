@@ -76,7 +76,7 @@ export const MyAreaChart = (props) => {
           filtered2.push(data[i]);
         }
       }
-      return filtered2;
+      return filtered2;    
     }
     // this function returns an array of sales after filtering by the two paramaters
     static filterByDateAndSize(size, startDate, endDate){
