@@ -3,7 +3,7 @@ from pandas import to_datetime
 from pandas import DataFrame
 from fbprophet import Prophet
 from matplotlib import pyplot
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, accuracy_score
 import csv
 
 def alterdates(path):
@@ -44,6 +44,15 @@ def inSample(path):
     forecast = model.predict(future)
     # summarize the forecast
     print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+    yTrue = []
+    for x in range(10):
+        yTrue.append(df['y'][88 + x])
+    print(yTrue)
+    yPred = []
+    for i in range (len(forecast)):
+        yPred.append(round(forecast['yhat'][i]))
+    print(yPred)
+    print("Mean Absolute Error:",mean_absolute_error(y_true=yTrue, y_pred=forecast['yhat']),'%')
     # plot forecast
     model.plot(forecast)
     pyplot.show()
@@ -90,9 +99,6 @@ def testy(path):
     df.plot()
     pyplot.show()
 
-
-path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/monthly-car-sales.csv'
-path2 = '/Users/samir/Documents/A-Level/Computer Science A-Level/Coursework/Project/Initial Testing/test2/express/local.csv'
 inSample("local.csv")
 # testy("local.csv")
 # alterdates("local.csv")

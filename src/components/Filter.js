@@ -71,7 +71,7 @@ export const Filter = (props) => {
   return (
     <div>
       {/* html for filter button */}
-      <Button onClick={handleClickOpen} round color="warning">Filter</Button>
+      <Button onClick={handleClickOpen} round color="primary" >Filter</Button>
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown

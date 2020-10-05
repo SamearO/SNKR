@@ -10,6 +10,14 @@ export const SalesLast72Display  = () => {
      
      // url for my attribute API endpoint
      const attributeUrl = "http://localhost:5000/api/attributes"
+
+     function storeobj(key, obj){
+        for(var i = 0;i < obj.length; i++){
+            if(obj[i]["Name"] == key){
+                return obj[i]
+            }
+        }
+    }
        
      // this code sets the attribute hook to data from my api
      useEffect(() => {
@@ -30,7 +38,7 @@ export const SalesLast72Display  = () => {
      }
  
      return(
-         <h3>{attributes[3]["Sales_Last_72"]}</h3>
+         <h3>{storeobj("Jordan 1 Retro High Bred Toe", attributes)["Sales_Last_72"]}</h3>
      )
 }
  
