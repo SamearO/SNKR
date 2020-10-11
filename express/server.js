@@ -3,6 +3,7 @@ const require = createRequire(import.meta.url);
 import {scraper} from "./ApiLink.js"
 const express = require("express");
 const bodyParser = require("body-parser");
+const spawn = require('child_process').spawn;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -49,6 +50,25 @@ app.get("/api/attributes", (req, res) => {
 
 })
 
+app.get("/api/series", (req, res) => {
+  const sqlite3 = require("sqlite3").verbose();
+  // open database
+  let db = new sqlite3.Database("stockx.db")
+  // gets all data from Product table
+  let sql = "SELECT * FROM SERIESSALES"
+  db.all(sql, [], (err, rows) => {
+    if (err){
+      throw err
+    }
+    res.send({series: rows});
+  })
+  // close the database connection
+  db.close();
+})
+
+// const process1 = spawn('python', ['./Predictor.py'])
+// exec(process1)
+
 // post api route
 app.post("/api/world", (req, res) => {
   console.log(req.body);
@@ -59,18 +79,32 @@ app.post("/api/world", (req, res) => {
 
 // this block of code automatically updates the database every hour and every 50 minutes
 const names = ["air-jordan-1-retro-high-light-smoke-grey", "air-jordan-1-retro-high-satin-snake-chicago-w", "air-jordan-1-retro-high-bred-toe", "nike-dunk-low-samba-2020", "adidas-yeezy-boost-350-v2-zyon"]
+console.log("")
 setTimeout(function() {
+  console.log("")
   scraper.updateDbFromApi1(names)
 }, 1000 * 5);
 setTimeout(function() {
+  console.log("")
   scraper.updateDbFromApi2()
 }, 1000 * 60);
+setTimeout(function() {
+  console.log("")
+  scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
+}, 1000 * 50);
 setInterval ( function() { 
+  console.log("")
   scraper.updateDbFromApi2()
 }, 1000 * 60 * 60);
 setInterval ( function() { 
+  console.log("")
   scraper.updateDbFromApi1(names)
 }, 1000 * 60 * 50);
+setInterval ( function() { 
+  console.log("")
+  scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
+}, 1000 * 60 * 45);
+
 
 
 // when server is started, logs this message on the console

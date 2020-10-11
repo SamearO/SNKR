@@ -3,6 +3,7 @@ const require = createRequire(import.meta.url);
 const axios = require("axios");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlite3 = require("sqlite3").verbose();
+import moment from "moment"
 
 export class scraper{
   // first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
@@ -176,7 +177,7 @@ axios({
                 if (err.code == 'SQLITE_BUSY') {
                   console.log("Database is busy, retrying in 5 seconds...")
                   setInterval ( function() { 
-                    scraper.updateProduct(product)
+                    this.updateProduct(product)
                   }, 1000 * 5);
                 }
                 else{
@@ -192,7 +193,7 @@ axios({
 
   static updateDbFromApi1(names){
     for(var i = 0; i < names.length; i++){
-      scraper.updateProduct(names[i])
+      this.updateProduct(names[i])
       var today = new Date()
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
       var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -263,7 +264,7 @@ static updateDbFromApi2() {
       // initialise myobj to the json response to the API
       var myobj = JSON.parse(xhr.responseText)["ProductActivity"];
       
-    scraper.updateProductActivity(myobj)
+    this.updateProductActivity(myobj)
     var today = new Date();
     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -272,4 +273,78 @@ static updateDbFromApi2() {
     }
   };
 }
+
+static updateSeriesSales(apidata, id){
+  const sqlite3 = require("sqlite3").verbose();
+  let db = new sqlite3.Database("stockx.db");
+  // the sql command which should be run
+  let sql =
+    "INSERT INTO SERIESSALES (Id, Price, Date) VALUES (?,?,?)";
+  // for every object in apidata
+  for (var i = 0; i < apidata.length; i++) {
+    let datatoinsert = [
+      id,
+      apidata[i][0],
+      apidata[i][1]
+    ];
+      // this function executes the sql command using db.run
+      db.serialize(function () {
+        db.run(sql, datatoinsert, function (err) {
+          // error condition 
+          if (err){
+            if (err.code == 'SQLITE_BUSY') {
+              var isLocked = true
+              if(isLocked = true){
+                console.log("Database is busy, retrying in 5 seconds...")
+                setInterval ( function() { 
+                  this.updateSeriesSales(apidata, "af8ae222-4eff-4a2d-b674-c3592efa5252" )
+                }, 1000 * 5);
+              } 
+            }
+            else{
+              console.log(err)
+            }
+          };
+        });
+      });
+    }
 }
+
+static updateDbFromSeriesData(id){
+    // this block of code finds the date of one day in the future to make sure the graph is showing all results as default
+    const today = new Date();
+    var tomorrow = today.setDate(today.getDate() + 1);
+    tomorrow = moment(tomorrow).format("YYYY-MM-DD");  
+
+    var urlid = JSON.stringify(id)
+    var end = urlid.length - 1
+    urlid = urlid.substring(1, end)    
+
+  axios({
+    method: "get",
+    url: "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/chart?start_date=all&end_date="+tomorrow.toString()+"&intervals=100&format=highstock&currency=GBP&country=GB",
+    headers: {
+      "user-agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
+        "sec-fetch-dest": "none",
+        accept: "*/*",
+        "sec-fetch-site": "cross-site",
+        "sec-fetch-mode": "cors",
+        "accept-language": "en-US",
+    },
+  }).then((res) => {
+    var datatoinsert = res.data.series[0].data
+    var idtoinsert = id
+    this.updateSeriesSales(datatoinsert, idtoinsert)
+    var today = new Date();
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date+' '+time;
+    console.log("SeriesSales table updated at:", dateTime)
+  }).catch((err) => {
+    console.log(err)
+  })
+}
+}
+
+// scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")

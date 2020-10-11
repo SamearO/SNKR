@@ -1,26 +1,46 @@
-from pandas import read_csv
-from pandas import to_datetime
-from pandas import DataFrame
+from pandas import read_csv, to_datetime, DataFrame, read_json
 from fbprophet import Prophet
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error, accuracy_score
-import csv
+import csv, requests
+import sys
 
-def alterdates(path):
-    df = read_csv(path)
-    with open(path, 'r') as file:
-        data = [row for row in csv.reader(path)]
-        for x in range(len(df["Date"])):
-            newdate = to_datetime(data[0][x])
-            file.set_value(x, "Date", newdate)
-            print("date", x, "altered")
-    file.close()
-    df = read_csv(path)
-    # for x in range(len(df["Date"]) -1 ):
-    #     newdate = to_datetime(df["Date"][x])
-    #     df.set_value(x, "Date", newdate)
-    #     print("date", x, "altered")
-    print(df.head(3))
+def grabseries():
+    r = requests.get("http://localhost:5000/api/series")
+    data = r.json()["series"]
+    return data
+
+def jsonpredict():
+    json = grabseries()
+    df = DataFrame.from_dict(json)
+    df.columns = ['id', 'ds', 'y']
+    df['ds'] = to_datetime(df['ds'], unit = 'ms')
+    model = Prophet()
+    print(df)
+    model.fit(df)
+    # define the period for which we want a prediction
+    future = list()
+    for x in range(10):
+        future.append(df['ds'][len(json) - 10 + x])
+    future = DataFrame(future)
+    future.columns = ['ds']
+    future['ds']= to_datetime(future['ds'], unit = 'ms')
+    # use the model to make a forecast
+    forecast = model.predict(future)
+    # summarize the forecast
+    print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+    yTrue = []
+    for x in range(10):
+        yTrue.append(df['y'][len(json) - 10 + x])
+    print(yTrue)
+    yPred = []
+    for i in range (len(forecast)):
+        yPred.append(round(forecast['yhat'][i]))
+    print(yPred)
+    print("Mean Absolute Error:",mean_absolute_error(y_true=yTrue, y_pred=forecast['yhat']),'%')
+    # plot forecast
+    model.plot(forecast)
+    pyplot.show()
 
 
 def inSample(path):
@@ -91,15 +111,6 @@ def outSample(path):
     pyplot.legend()
     pyplot.show()
 
-def testy(path):
-    # load data
-    df = read_csv(path)
-    alterdates(path)
-    # plot the time series
-    df.plot()
-    pyplot.show()
+jsonpredict()
+# inSample("local.csv")
 
-inSample("local.csv")
-# testy("local.csv")
-# alterdates("local.csv")
-# outSample("local.csv")
