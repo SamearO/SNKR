@@ -14,6 +14,7 @@ import {
   Tooltip,
   Label,
 } from "recharts";
+import { CircularProgress } from "@material-ui/core";
 
 const axios = require("axios");
 
@@ -110,7 +111,7 @@ export const MyAreaChart = (props) => {
   console.log("Data being displayed:", data);
 
   if(loading == true){
-    return <h2>Loading...</h2>
+    return <CircularProgress></CircularProgress>
   }
 
   return (

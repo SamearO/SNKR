@@ -5,9 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
 import Filter from "./Filter.js";
 import moment from "moment";
-import VolatilityDisplay from  "./Volatility.js"
-import {SalesLast72Display} from "./SalesLast72"
-import PicLinkDisplay from "./PicLink.js"
+import { AttributeDisplay } from  "./Attributes.js"
+
 
 // core components
 // import Button from "./imported/CustomButtons/Button.js";
@@ -121,7 +120,7 @@ export default function CenteredGrid() {
         <GridItem xs={6}>
           <Card raised={true} className={classes.root}>
             <CardBody>
-              <PicLinkDisplay></PicLinkDisplay>
+              <AttributeDisplay typeof = "Pic_Link"></AttributeDisplay>
             </CardBody>
           </Card>
         </GridItem>
@@ -132,7 +131,7 @@ export default function CenteredGrid() {
                 <h4>Sales In The Last 72 Hours</h4>
               </CardHeader>
               <CardBody>
-                <SalesLast72Display></SalesLast72Display>
+                <AttributeDisplay typeof = "Sales_Last_72"></AttributeDisplay>
               </CardBody>
           </Card>
         </GridItem>
@@ -143,7 +142,7 @@ export default function CenteredGrid() {
                 <h4>Volatility</h4>
               </CardHeader>
               <CardBody>
-                <VolatilityDisplay></VolatilityDisplay>
+                <AttributeDisplay typeof = "Volatility"></AttributeDisplay>
               </CardBody>
           </Card>
         </GridItem>

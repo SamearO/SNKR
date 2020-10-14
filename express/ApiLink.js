@@ -8,21 +8,23 @@ import moment from "moment"
 export class scraper{
   // first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
 // could be very helpful when building a seach bar
+
+headers = {
+  "user-agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
+    "sec-fetch-dest": "none",
+    accept: "*/*",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-mode": "cors",
+    "accept-language": "en-US",
+}
+
 static searchBar(query) {
   axios({
     method: "post",
     url:
       "https://xw7sbct9v6-1.algolianet.com/1/indexes/products/query?x-algolia-agent=Algolia%20for%20vanilla%20JavaScript%203.32.1&x-algolia-application-id=XW7SBCT9V6&x-algolia-api-key=6bfb5abee4dcd8cea8f0ca1ca085c2b3",
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-      accept: "application/json",
-      "accept-language": "en-US,en;q=0.9",
-      "content-type": "application/x-www-form-urlencoded",
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "cross-site",
-    },
+    headers: headers,
     data: `{\"params\":\"query=${encodeURIComponent(
       query
     )}&facets=*&filters=\"}`,
@@ -36,15 +38,6 @@ static searchBar(query) {
 static searchDirect = (query) => {
   const xhr = new XMLHttpRequest();
   const url = "https://stockx.com/api/browse?_search="+query;
-  const headers =  {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-      "sec-fetch-dest": "none",
-      accept: "*/*",
-      "sec-fetch-site": "cross-site",
-      "sec-fetch-mode": "cors",
-      "accept-language": "en-US",
-    }
   xhr.open("GET", url);
   for(let key in headers){
       xhr.setRequestHeader(key, headers[key]) 
@@ -78,15 +71,7 @@ static grabProductInfo = (product) => {
       "https://stockx.com/api/products/" +
       webURL +
       "?includes=market&currency=GBP",
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-      "sec-fetch-dest": "none",
-      "accept": "*/*",
-      "sec-fetch-site": "cross-site",
-      "sec-fetch-mode": "cors",
-      "accept-language": "en-US",
-    },
+    headers: headers,
   })
     .then((res) => {
         var data = res.data
@@ -128,15 +113,7 @@ axios({
     "https://stockx.com/api/products/" +
     webURL +
     "?includes=market&currency=GBP",
-  headers: {
-    "user-agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-    "sec-fetch-dest": "none",
-    // accept: "*/*",
-    // "sec-fetch-site": "cross-site",
-    // "sec-fetch-mode": "cors",
-    // "accept-language": "en-US",
-  },
+  headers: headers,
 })
   .then((res) => {
       var data = res.data
@@ -318,20 +295,12 @@ static updateDbFromSeriesData(id){
 
     var urlid = JSON.stringify(id)
     var end = urlid.length - 1
-    urlid = urlid.substring(1, end)    
-
+    urlid = urlid.substring(1, end)
+  
   axios({
     method: "get",
     url: "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/chart?start_date=all&end_date="+tomorrow.toString()+"&intervals=100&format=highstock&currency=GBP&country=GB",
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
-        "sec-fetch-dest": "none",
-        accept: "*/*",
-        "sec-fetch-site": "cross-site",
-        "sec-fetch-mode": "cors",
-        "accept-language": "en-US",
-    },
+    headers: headers,
   }).then((res) => {
     var datatoinsert = res.data.series[0].data
     var idtoinsert = id

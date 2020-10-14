@@ -2,8 +2,8 @@ from pandas import read_csv, to_datetime, DataFrame, read_json
 from fbprophet import Prophet
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error, accuracy_score
-import csv, requests
-import sys
+import csv, requests, sys
+import Pillow
 
 def grabseries():
     r = requests.get("http://localhost:5000/api/series")
@@ -113,4 +113,6 @@ def outSample(path):
 
 jsonpredict()
 # inSample("local.csv")
+
+print("test")
 
