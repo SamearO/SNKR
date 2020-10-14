@@ -24,7 +24,7 @@ static searchBar(query) {
     method: "post",
     url:
       "https://xw7sbct9v6-1.algolianet.com/1/indexes/products/query?x-algolia-agent=Algolia%20for%20vanilla%20JavaScript%203.32.1&x-algolia-application-id=XW7SBCT9V6&x-algolia-api-key=6bfb5abee4dcd8cea8f0ca1ca085c2b3",
-    headers: headers,
+    headers: this.headers,
     data: `{\"params\":\"query=${encodeURIComponent(
       query
     )}&facets=*&filters=\"}`,
@@ -39,8 +39,8 @@ static searchDirect = (query) => {
   const xhr = new XMLHttpRequest();
   const url = "https://stockx.com/api/browse?_search="+query;
   xhr.open("GET", url);
-  for(let key in headers){
-      xhr.setRequestHeader(key, headers[key]) 
+  for(let key in this.headers){
+      xhr.setRequestHeader(key, this.headers[key]) 
     }
   xhr.send();
   // function executes when the ready state is changed
@@ -71,7 +71,7 @@ static grabProductInfo = (product) => {
       "https://stockx.com/api/products/" +
       webURL +
       "?includes=market&currency=GBP",
-    headers: headers,
+    headers: this.headers,
   })
     .then((res) => {
         var data = res.data
@@ -113,7 +113,7 @@ axios({
     "https://stockx.com/api/products/" +
     webURL +
     "?includes=market&currency=GBP",
-  headers: headers,
+  headers: this.headers,
 })
   .then((res) => {
       var data = res.data
@@ -300,7 +300,7 @@ static updateDbFromSeriesData(id){
   axios({
     method: "get",
     url: "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/chart?start_date=all&end_date="+tomorrow.toString()+"&intervals=100&format=highstock&currency=GBP&country=GB",
-    headers: headers,
+    headers: this.headers,
   }).then((res) => {
     var datatoinsert = res.data.series[0].data
     var idtoinsert = id
