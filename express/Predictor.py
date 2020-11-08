@@ -2,8 +2,7 @@ from pandas import read_csv, to_datetime, DataFrame, read_json
 from fbprophet import Prophet
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error, accuracy_score
-import csv, requests, sys
-import Pillow
+import csv, requests, sys, json
 
 def grabseries():
     r = requests.get("http://localhost:5000/api/series")
@@ -16,7 +15,7 @@ def jsonpredict():
     df.columns = ['id', 'ds', 'y']
     df['ds'] = to_datetime(df['ds'], unit = 'ms')
     model = Prophet()
-    print(df)
+    # print(df)
     model.fit(df)
     # define the period for which we want a prediction
     future = list()
@@ -28,18 +27,24 @@ def jsonpredict():
     # use the model to make a forecast
     forecast = model.predict(future)
     # summarize the forecast
-    print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+    # print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+    # print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
     yTrue = []
     for x in range(10):
         yTrue.append(df['y'][len(json) - 10 + x])
-    print(yTrue)
+    # print(yTrue)
     yPred = []
     for i in range (len(forecast)):
         yPred.append(round(forecast['yhat'][i]))
+    # print(yPred)
+    # print("Mean Absolute Error:",mean_absolute_error(y_true=yTrue, y_pred=forecast['yhat']),'%')
+    # plot forecast
+    # model.plot(forecast)
+    print(df.to_json())
+    print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+    print(yTrue)
     print(yPred)
     print("Mean Absolute Error:",mean_absolute_error(y_true=yTrue, y_pred=forecast['yhat']),'%')
-    # plot forecast
-    model.plot(forecast)
     pyplot.show()
 
 
@@ -112,7 +117,5 @@ def outSample(path):
     pyplot.show()
 
 jsonpredict()
-# inSample("local.csv")
-
-print("test")
+sys.stdout.flush()
 

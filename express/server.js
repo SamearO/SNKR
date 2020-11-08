@@ -15,6 +15,24 @@ var cors = require("cors");
 const { response } = require("express");
 app.use(cors()); // Use this after the variable declaration
 
+app.get('/api/pytest', (req, res) => {
+  var dataToSend;
+  // spawn new child process to call the python script
+  const python = spawn('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3', ['./predictor.py']);
+  // collect data from script
+  python.stdout.on('data', function (data) {
+   console.log('Data sent...');
+   dataToSend = data.toString();
+   python.stdout.pipe(res)
+   python.stderr.pipe(res)
+  });
+  // in close event we are sure that stream from child process is closed
+  python.on('close', (code) => {
+    console.log(`child process close all stdio with code ${code}`);
+    }
+)
+})
+
 // code for my api endpoint that displays data from my database
 app.get("/api/sales", (req, res) => {
   const sqlite3 = require("sqlite3").verbose();
@@ -66,9 +84,6 @@ app.get("/api/series", (req, res) => {
   db.close();
 })
 
-// const process1 = spawn('python', ['./Predictor.py'])
-// exec(process1)
-
 // post api route
 app.post("/api/world", (req, res) => {
   console.log(req.body);
@@ -104,8 +119,6 @@ setInterval ( function() {
   console.log("")
   scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
 }, 1000 * 60 * 45);
-
-
 
 // when server is started, logs this message on the console
 app.listen(port, () => console.log(`Server Started On: ${port}`));

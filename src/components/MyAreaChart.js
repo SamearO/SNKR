@@ -13,6 +13,7 @@ import {
   CartesianGrid,
   Tooltip,
   Label,
+  ResponsiveContainer
 } from "recharts";
 import { CircularProgress } from "@material-ui/core";
 
@@ -114,43 +115,53 @@ export const MyAreaChart = (props) => {
     return <CircularProgress></CircularProgress>
   }
 
+  const cardstyle = {
+    backgroundColor: '#F0FFFF',
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white'
+  }
+
   return (
-    // settings for the position and size of graph
     <AreaChart
-      width={600}
-      height={500}
-      data={data}
-      margin={{
-        top: 30,
-        right: 30,
-        left: 30,
-        bottom: 30,
+    width= {1800}
+    height={500}
+    data={data}
+    margin={{
+      top: 30,
+      right: 30,
+      left: 30,
+      bottom: 30,
+    }}
+  >
+    <CartesianGrid strokeDasharray="3 3" />
+    {/* settings for x axis */}
+    <XAxis
+      dataKey="ProductActivity__createdAt"
+      label={{ value: "Date Of Sale", dy: 20 }}
+    />
+    {/* settings for y axis */}
+    <YAxis
+      label={{
+        value: "Price (£)",
+        position: "insideLeft",
+        angle: -90,
+        dy: -10,
       }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      {/* settings for x axis */}
-      <XAxis
-        dataKey="ProductActivity__createdAt"
-        label={{ value: "Date Of Sale", dy: 20 }}
-      />
-      {/* settings for y axis */}
-      <YAxis
-        label={{
-          value: "Price (£)",
-          position: "insideLeft",
-          angle: -90,
-          dy: -10,
-        }}
-      />
-      <Tooltip />
-      {/* settings for area under line */}
-      <Area
-        type="monotone"
-        dataKey="ProductActivity__localAmount"
-        stroke="#8884d8"
-        fill="#DC143C"
-      />
-    </AreaChart>
+    />
+    <Tooltip />
+    {/* settings for area under line */}
+    <Area
+      type="monotone"
+      dataKey="ProductActivity__localAmount"
+      stroke="#8884d8"
+      fill="#DC143C"
+    />
+  </AreaChart>
+
   );
 };
 

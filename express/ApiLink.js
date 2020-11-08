@@ -6,19 +6,17 @@ const sqlite3 = require("sqlite3").verbose();
 import moment from "moment"
 
 export class scraper{
-  // first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
-// could be very helpful when building a seach bar
-
 headers = {
   "user-agent":
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
     "sec-fetch-dest": "none",
     accept: "*/*",
     "sec-fetch-site": "cross-site",
     "sec-fetch-mode": "cors",
     "accept-language": "en-US",
 }
-
+// first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
+// could be very helpful when building a seach bar
 static searchBar(query) {
   axios({
     method: "post",
@@ -71,14 +69,22 @@ static grabProductInfo = (product) => {
       "https://stockx.com/api/products/" +
       webURL +
       "?includes=market&currency=GBP",
-    headers: this.headers,
+    headers: {
+      "user-agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
+        "sec-fetch-dest": "none",
+        accept: "*/*",
+        "sec-fetch-site": "cross-site",
+        "sec-fetch-mode": "cors",
+        "accept-language": "en-US",
+    },
   })
     .then((res) => {
         var data = res.data
-      const variants = data.Product.children;
-      var variantArray = [];
-      for (let key in variants) {
-        variantArray.push({
+        const variants = data.Product.children;
+        var variantArray = [];
+        for (let key in variants) {
+          variantArray.push({
           size: variants[key].shoeSize,
           uuid: key,
           market: variants[key].market,
@@ -95,10 +101,16 @@ static grabProductInfo = (product) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      if((err["data"]["blockScript"]).includes("captcha")){
+        console.log("REQUEST BLOCKED BY CAPTCHA:", err['data']['blockScript'])
+      }
+      else if(err['response']['statusText'] == 'Forbidden'){
+        console.log("REQUEST BLOCKED BY PERIMITERX")
+      }
     });
 }
 
+// this method updates the Product table with the attributes of the product, it takes the full name of the product as a paramater. 
 static updateProduct(product) {
   let webURL;
   if (typeof product == "string") {
@@ -106,14 +118,21 @@ static updateProduct(product) {
       webURL = product.split("stockx.com/")[1].split("/")[0];
       else webURL = product;
   } 
-  // else webURL = product.urlKey;
 axios({
   method: "get",
   url:
     "https://stockx.com/api/products/" +
     webURL +
     "?includes=market&currency=GBP",
-  headers: this.headers,
+  headers: {
+    "user-agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
+      "sec-fetch-dest": "none",
+      accept: "*/*",
+      "sec-fetch-site": "cross-site",
+      "sec-fetch-mode": "cors",
+      "accept-language": "en-US",
+  },
 })
   .then((res) => {
       var data = res.data
@@ -154,23 +173,26 @@ axios({
                 if (err.code == 'SQLITE_BUSY') {
                   console.log("Database is busy, retrying in 5 seconds...")
                   setInterval ( function() { 
-                    this.updateProduct(product)
+                    scraper.updateProduct(product)
                   }, 1000 * 5);
                 }
-                else{
-                  console.log(err)
-                }
+                else(console.log(err))
               };
           }
           ,)});
-      }).catch((err) =>{
-          console.log(err)
-      })
-  }       
+  }).catch((err) =>{
+    if((err.data.blockscript).includes("captcha")){
+      console.log("REQUEST BLOCKED BY CAPTCHA:")
+    }
+    else if(err['response']['statusText'].includes('Forbidden')){
+      console.log("REQUEST BLOCKED BY PERIMITERX")
+    }
+  })
+}       
 
   static updateDbFromApi1(names){
     for(var i = 0; i < names.length; i++){
-      this.updateProduct(names[i])
+      scraper.updateProduct(names[i])
       var today = new Date()
       var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
       var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -209,13 +231,11 @@ static updateProductActivity(apidata) {
             if(isLocked = true){
               console.log("Database is busy, retrying in 5 seconds...")
               setInterval ( function() { 
-                updateProductActivity(apidata)
+                scraper.updateProductActivity(apidata)
               }, 1000 * 5);
             } 
           }
-          else{
-            console.log(err)
-          }
+          else(console.log(err))
         };
       });
     });
@@ -300,7 +320,15 @@ static updateDbFromSeriesData(id){
   axios({
     method: "get",
     url: "https://stockx.com/api/products/af8ae222-4eff-4a2d-b674-c3592efa5252/chart?start_date=all&end_date="+tomorrow.toString()+"&intervals=100&format=highstock&currency=GBP&country=GB",
-    headers: this.headers,
+    headers:  {
+      "user-agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
+        "sec-fetch-dest": "none",
+        accept: "*/*",
+        "sec-fetch-site": "cross-site",
+        "sec-fetch-mode": "cors",
+        "accept-language": "en-US",
+    },
   }).then((res) => {
     var datatoinsert = res.data.series[0].data
     var idtoinsert = id
@@ -311,6 +339,12 @@ static updateDbFromSeriesData(id){
     var dateTime = date+' '+time;
     console.log("SeriesSales table updated at:", dateTime)
   }).catch((err) => {
+    // if(err['data']['blockScript'].includes("captcha")){
+    //   console.log("REQUEST BLOCKED BY CAPTCHA:", err['data']['blockScript'])
+    // }
+    // else if(err['response']['statusText'] == 'Forbidden'){
+    //   console.log("REQUEST BLOCKED BY PERIMITERX")
+    // }
     console.log(err)
   })
 }

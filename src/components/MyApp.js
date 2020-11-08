@@ -1,12 +1,10 @@
-import { Avatar, CardActions, CardContent, Grid } from "@material-ui/core";
+import { Avatar, CardActions, CardContent, Grid, flexWrap } from "@material-ui/core";
 import React, {useState, useEffect} from "react";
-import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
 import Filter from "./Filter.js";
 import moment from "moment";
 import { AttributeDisplay } from  "./Attributes.js"
-
 
 // core components
 // import Button from "./imported/CustomButtons/Button.js";
@@ -14,11 +12,7 @@ import Card from "./imported/Card/Card.js";
 import CardBody from "./imported/Card/CardBody.js";
 import GridItem from "./imported/Grid/GridItem.js";
 import CardHeader from "./imported/Card/CardHeader.js";
-import CardFooter from "./imported/Card/CardFooter.js";
-import styles from "././imported/assets/jss/material-dashboard-react/cardImagesStyles.js";
-import Button from "././imported/CustomButtons/Button.js";
-import { cardHeader, container } from "./imported/assets/jss/material-dashboard-react.js";
-import { CircularProgressbar} from "react-circular-progressbar" 
+import { dark } from "@material-ui/core/styles/createPalette";
 
 const axios = require("axios");
 
@@ -39,6 +33,8 @@ const useStyles = makeStyles({
     marginBottom: 12,
   },
 });
+
+
 
 // Grid Function; allocates space for components
 export default function CenteredGrid() {
@@ -82,17 +78,61 @@ export default function CenteredGrid() {
     }, []); 
 
     const darkStyling = {
-      backgroundColor: "#02064a",
-      height: "900px",
-      width: "1900",
-      backgroundTint: "#27272c",
+      backgroundColor: '#161662',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'white'
+    }
+
+    const cardstyle = {
+      backgroundColor: '#F0FFFF',
+      display: 'flex',
+      flexDirection: 'row',
+      // alignItems: 'center',
+      // justifyContent: 'center',
+      color: 'white'
     }
 
   return (
     <div style={darkStyling}>
-      <Grid container spacing={1} sm={"auto"} md={"auto"} lg={"auto"}>
+      <Grid container spacing={1}  direction = "row">
+        <div>
+        <GridItem>
+        <Card raised={true}>
+            <CardHeader color="#152028">
+                <h4>Volatility</h4>
+              </CardHeader>
+              <CardBody>
+                <AttributeDisplay typeof = "Volatility"></AttributeDisplay>
+              </CardBody>
+        </Card>
+        </GridItem>
+        </div>
+
+        <GridItem>
+          <Card raised={true} >
+            <CardHeader>
+                <h4>Sales In The Last 72 Hours</h4>
+              </CardHeader>
+              <CardBody>
+                <AttributeDisplay typeof = "Sales_Last_72"></AttributeDisplay>
+              </CardBody>
+          </Card>
+        </GridItem>
 
         <GridItem xs={6}>
+          <Card raised={true} style = {cardstyle}>
+            <CardBody>
+              <AttributeDisplay typeof = "Pic_Link"></AttributeDisplay>
+            </CardBody>
+          </Card>
+        </GridItem>
+        
+
+        <GridItem xs={12} >
           <Card raised={true}  >
             <CardHeader>
               <h4>Sales Graph</h4> <Avatar src= "https://www.shareicon.net/data/128x128/2015/08/20/87935_red_512x512.png"></Avatar>
@@ -102,7 +142,8 @@ export default function CenteredGrid() {
               size={size}
               startDate={startDate}
               endDate={endDate}
-              ></MyAreaChart>
+              >
+              </MyAreaChart>
             </CardBody>
             <CardActions>
               <Filter
@@ -114,36 +155,6 @@ export default function CenteredGrid() {
                 setEndDate={setEndDate}
               ></Filter>
             </CardActions>
-          </Card>
-        </GridItem>
-
-        <GridItem xs={6}>
-          <Card raised={true} className={classes.root}>
-            <CardBody>
-              <AttributeDisplay typeof = "Pic_Link"></AttributeDisplay>
-            </CardBody>
-          </Card>
-        </GridItem>
-
-        <GridItem>
-          <Card raised={true} className={classes.root}>
-            <CardHeader>
-                <h4>Sales In The Last 72 Hours</h4>
-              </CardHeader>
-              <CardBody>
-                <AttributeDisplay typeof = "Sales_Last_72"></AttributeDisplay>
-              </CardBody>
-          </Card>
-        </GridItem>
-
-        <GridItem>
-          <Card raised={true} className={classes.root}>
-            <CardHeader color="#152028">
-                <h4>Volatility</h4>
-              </CardHeader>
-              <CardBody>
-                <AttributeDisplay typeof = "Volatility"></AttributeDisplay>
-              </CardBody>
           </Card>
         </GridItem>
 
