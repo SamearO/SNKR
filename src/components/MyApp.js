@@ -13,6 +13,7 @@ import CardBody from "./imported/Card/CardBody.js";
 import GridItem from "./imported/Grid/GridItem.js";
 import CardHeader from "./imported/Card/CardHeader.js";
 import { dark } from "@material-ui/core/styles/createPalette";
+import { cardHeader } from "./imported/assets/jss/material-dashboard-react.js";
 
 const axios = require("axios");
 
@@ -87,19 +88,9 @@ export default function CenteredGrid() {
       color: 'white'
     }
 
-    const cardstyle = {
-      backgroundColor: '#F0FFFF',
-      display: 'flex',
-      flexDirection: 'row',
-      // alignItems: 'center',
-      // justifyContent: 'center',
-      color: 'white'
-    }
-
   return (
     <div style={darkStyling}>
       <Grid container spacing={1}  direction = "row">
-        <div>
         <GridItem>
         <Card raised={true}>
             <CardHeader color="#152028">
@@ -110,7 +101,6 @@ export default function CenteredGrid() {
               </CardBody>
         </Card>
         </GridItem>
-        </div>
 
         <GridItem>
           <Card raised={true} >
@@ -124,7 +114,7 @@ export default function CenteredGrid() {
         </GridItem>
 
         <GridItem xs={6}>
-          <Card raised={true} style = {cardstyle}>
+          <Card raised={true} >
             <CardBody>
               <AttributeDisplay typeof = "Pic_Link"></AttributeDisplay>
             </CardBody>
@@ -132,8 +122,8 @@ export default function CenteredGrid() {
         </GridItem>
         
 
-        <GridItem xs={12} >
-          <Card raised={true}  >
+        <GridItem xs={12}>
+          <Card raised={true} >
             <CardHeader>
               <h4>Sales Graph</h4> <Avatar src= "https://www.shareicon.net/data/128x128/2015/08/20/87935_red_512x512.png"></Avatar>
             </CardHeader>

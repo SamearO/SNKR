@@ -126,7 +126,9 @@ export const MyAreaChart = (props) => {
   }
 
   return (
-    <AreaChart
+
+    <ResponsiveContainer width = "95%" height = {400}>
+          <AreaChart
     width= {1800}
     height={500}
     data={data}
@@ -161,6 +163,9 @@ export const MyAreaChart = (props) => {
       fill="#DC143C"
     />
   </AreaChart>
+    </ResponsiveContainer>
+
+
 
   );
 };

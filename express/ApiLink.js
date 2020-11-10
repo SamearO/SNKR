@@ -187,6 +187,7 @@ axios({
     else if(err['response']['statusText'].includes('Forbidden')){
       console.log("REQUEST BLOCKED BY PERIMITERX")
     }
+    else(console.log(err))
   })
 }       
 

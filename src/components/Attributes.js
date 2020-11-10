@@ -3,6 +3,7 @@ import axios from "axios";
 import { CircularProgressbar, CircularProgressbarWithChildren} from "react-circular-progressbar" 
 import CircularProgress from "@material-ui/core/CircularProgress"
 import 'react-circular-progressbar/dist/styles.css';
+import { ResponsiveContainer } from "recharts";
 
 export const AttributeDisplay = (props) => {
     
@@ -51,13 +52,21 @@ export const AttributeDisplay = (props) => {
 
     if(props.typeof == "Sales_Last_72"){
         return(
-            <h3>{storeobj("Jordan 1 Retro High Bred Toe", attributes)["Sales_Last_72"]}</h3>
+            <h2>{storeobj("Jordan 1 Retro High Bred Toe", attributes)["Sales_Last_72"]}</h2>
+        )
+    }
+
+    if(props.typeof == "Name"){
+        return(
+            <h4>{storeobj("Jordan 1 Retro High Bred Toe", attributes)["Name"]}</h4>
         )
     }
 
     else if(props.typeof == "Pic_Link"){
         return(
-        <img src = {storeobj("Jordan 1 Retro High Bred Toe", attributes)["Pic_Link"]} width="400" height="400"></img>
+            <ResponsiveContainer width = "95%" height = {500}>
+                <img src = {storeobj("Jordan 1 Retro High Bred Toe", attributes)["Pic_Link"]} width="400" height="400"></img>
+            </ResponsiveContainer>
         )
     }
 
