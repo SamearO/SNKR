@@ -97,7 +97,7 @@ const names = ["air-jordan-1-retro-high-light-smoke-grey", "air-jordan-1-retro-h
 console.log("")
 setTimeout(function() {
   console.log("")
-  scraper.updateDbFromApi1(names)
+  scraper.updateDbFromArr(names)
 }, 1000 * 5);
 setTimeout(function() {
   console.log("")
@@ -113,7 +113,7 @@ setInterval ( function() {
 }, 1000 * 60 * 60);
 setInterval ( function() { 
   console.log("")
-  scraper.updateDbFromApi1(names)
+  scraper.updateDbFromArr(names)
 }, 1000 * 60 * 50);
 setInterval ( function() { 
   console.log("")

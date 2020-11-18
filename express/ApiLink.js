@@ -4,8 +4,13 @@ const axios = require("axios");
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlite3 = require("sqlite3").verbose();
 import moment from "moment"
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, { retries: 5 });
+
 
 export class scraper{
+
 headers = {
   "user-agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
@@ -15,6 +20,7 @@ headers = {
     "sec-fetch-mode": "cors",
     "accept-language": "en-US",
 }
+
 // first route to search the stockX API, this is the route stockx uses to display autocomplete searches, therefore the limit is 20
 // could be very helpful when building a seach bar
 static searchBar(query) {
@@ -124,7 +130,7 @@ axios({
     "https://stockx.com/api/products/" +
     webURL +
     "?includes=market&currency=GBP",
-  headers: {
+  headers:{
     "user-agent":
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
       "sec-fetch-dest": "none",
@@ -181,17 +187,31 @@ axios({
           }
           ,)});
   }).catch((err) =>{
-    if((err.data.blockscript).includes("captcha")){
-      console.log("REQUEST BLOCKED BY CAPTCHA:")
+    if(err.response){
+      console.log("REQUEST MADE AND SERVER RESPONDED")
+      if((err.response.data).includes("captcha")){
+        console.log("REQUEST BLOCKED BY CAPTCHA:")
+      }
+      else if(err['response']['statusText'].includes('Forbidden')){
+        console.log("REQUEST BLOCKED BY PERIMITERX")
+      }
+      // else(console.log(err))
     }
-    else if(err['response']['statusText'].includes('Forbidden')){
-      console.log("REQUEST BLOCKED BY PERIMITERX")
+    else if (err.request) {
+      console.log("REQUEST MADE BUT NO RESPONSE RECIEVED")
+      // The request was made but no response was received
+      // console.log(err);
     }
-    else(console.log(err))
+    else {
+      console.log("ERROR SETTING UP REQUEST")
+      // Something happened in setting up the request that triggered an Error
+      // console.log('Error', err.message);
+    }
   })
 }       
 
-  static updateDbFromApi1(names){
+// this method updates the database for multiple pairs of shoes
+  static updateDbFromArr(names){
     for(var i = 0; i < names.length; i++){
       scraper.updateProduct(names[i])
       var today = new Date()
@@ -346,7 +366,8 @@ static updateDbFromSeriesData(id){
     // else if(err['response']['statusText'] == 'Forbidden'){
     //   console.log("REQUEST BLOCKED BY PERIMITERX")
     // }
-    console.log(err)
+    console.log("SERIES ERROR")
+    // console.log(err)
   })
 }
 }
