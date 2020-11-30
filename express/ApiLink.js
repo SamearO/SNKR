@@ -5,6 +5,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlite3 = require("sqlite3").verbose();
 import moment from "moment"
 import axiosRetry from 'axios-retry';
+import { existsSync } from 'fs';
 const spawn = require('child_process').spawn;
 
 axiosRetry(axios, { retries: 5 });
@@ -398,8 +399,18 @@ static runPredUpdate(data){
   })
 }
 
-static updateprediction(){
-  const python = spawn('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3', ['./predictor.py']);
+static findInterpreter(){
+  // home directory for interpreter
+  if (existsSync('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3')){
+    return '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
+  }
+  else{
+    return "python"
+  }
+}
+
+static updatePrediction(){
+  const python = spawn(this.findInterpreter(), ['./predictor.py']);
   let result = ''
   python.stdout.on('data', function (data) {
     result = result + data.toString();
@@ -408,8 +419,8 @@ static updateprediction(){
     // console.log(result2)
   })
   python.on('close', function (code) {
+    // console.log(result)
     result = JSON.parse(result)
-    console.log(result.yhat[0])
     const sqlite3 = require("sqlite3").verbose();
     let db = new sqlite3.Database("stockx.db");
     let sql = "INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)";
@@ -420,7 +431,7 @@ static updateprediction(){
         result.ds[i]
       ];
       db.serialize(function() {
-        db.run(sql, datatoinsert)
+        runPredUpdate(datatoinsert)
       })
       
     }
@@ -434,5 +445,5 @@ static updateprediction(){
 }
 
 // console.log(scraper.dataplay())
-scraper.updateprediction()
+// scraper.grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe")
 // scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
