@@ -13,7 +13,10 @@ import {
   CartesianGrid,
   Tooltip,
   Label,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ComposedChart,
+  Legend,
+  Line
 } from "recharts";
 import { CircularProgress } from "@material-ui/core";
 
@@ -125,28 +128,54 @@ export const MyAreaChart = (props) => {
     color: 'white'
   }
 
+  axios.get("http://localhost:5000/api/pytest").then((res) => {
+    console.log(res.data)
+  })
+
   return (
 
-    <ResponsiveContainer width = "95%" height = {400}>
-          <AreaChart
-    width= {1800}
-    height={500}
-    data={data}
-    margin={{
-      top: 30,
-      right: 30,
-      left: 30,
-      bottom: 30,
-    }}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    {/* settings for x axis */}
-    <XAxis
-      dataKey="ProductActivity__createdAt"
-      label={{ value: "Date Of Sale", dy: 20 }}
-    />
-    {/* settings for y axis */}
-    <YAxis
+  //   <ResponsiveContainer width = "95%" height = {400}>
+  //         <AreaChart
+  //   width= {1800}
+  //   height={500}
+  //   data={data}
+  //   margin={{
+  //     top: 30,
+  //     right: 30,
+  //     left: 30,
+  //     bottom: 30,
+  //   }}
+  // >
+  //   <CartesianGrid strokeDasharray="3 3" />
+  //   {/* settings for x axis */}
+  //   <XAxis
+  //     dataKey="ProductActivity__createdAt"
+  //     label={{ value: "Date Of Sale", dy: 20 }}
+  //   />
+  //   {/* settings for y axis */}
+  //   <YAxis
+  //     label={{
+  //       value: "Price (£)",
+  //       position: "insideLeft",
+  //       angle: -90,
+  //       dy: -10,
+  //     }}
+  //   />
+  //   <Tooltip />
+  //   {/* settings for area under line */}
+  //   <Area
+  //     type="monotone"
+  //     dataKey="ProductActivity__localAmount"
+  //     stroke="#8884d8"
+  //     fill="#DC143C"
+  //   />
+  // </AreaChart>
+  //   </ResponsiveContainer>
+
+  <ResponsiveContainer width = "95%" height = {400}>
+      <ComposedChart width={1800} height={500} data={data} margin = {{top: 30,right: 30,left: 30,bottom: 30,  }}> 
+  <XAxis dataKey="ProductActivity__createdAt" label={{ value: "Date Of Sale", dy: 20 }} />
+  <YAxis
       label={{
         value: "Price (£)",
         position: "insideLeft",
@@ -154,18 +183,13 @@ export const MyAreaChart = (props) => {
         dy: -10,
       }}
     />
-    <Tooltip />
-    {/* settings for area under line */}
-    <Area
-      type="monotone"
-      dataKey="ProductActivity__localAmount"
-      stroke="#8884d8"
-      fill="#DC143C"
-    />
-  </AreaChart>
-    </ResponsiveContainer>
-
-
+  <Tooltip />
+  {/* <Legend /> */}
+  {/* <CartesianGrid strokeDasharray="3 3" /> */}
+  <Area type="monotone" dataKey="ProductActivity__localAmount" stroke="##8884d8" fill="#DC143C" />
+  {/* <Line type="monotone" dataKey="ProductActivity__localAmount" stroke="#ff7300" /> */}
+</ComposedChart>
+  </ResponsiveContainer>
 
   );
 };

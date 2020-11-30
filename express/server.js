@@ -15,22 +15,17 @@ var cors = require("cors");
 const { response } = require("express");
 app.use(cors()); // Use this after the variable declaration
 
+function isJson(str) {
+  try {
+      return JSON.parse(str);
+  } catch (error) {
+      return false;
+  }
+}
+
 app.get('/api/pytest', (req, res) => {
-  var dataToSend;
-  // spawn new child process to call the python script
-  const python = spawn('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3', ['./predictor.py']);
-  // collect data from script
-  python.stdout.on('data', function (data) {
-   console.log('Data sent...');
-   dataToSend = data.toString();
-   python.stdout.pipe(res)
-   python.stderr.pipe(res)
-  });
-  // in close event we are sure that stream from child process is closed
-  python.on('close', (code) => {
-    console.log(`child process close all stdio with code ${code}`);
-    }
-)
+  res.send(scraper.dataplay())
+  console.log("DONE")
 })
 
 // code for my api endpoint that displays data from my database

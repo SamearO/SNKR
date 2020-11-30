@@ -5,8 +5,10 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const sqlite3 = require("sqlite3").verbose();
 import moment from "moment"
 import axiosRetry from 'axios-retry';
+const spawn = require('child_process').spawn;
 
 axiosRetry(axios, { retries: 5 });
+
 
 
 export class scraper{
@@ -370,6 +372,67 @@ static updateDbFromSeriesData(id){
     // console.log(err)
   })
 }
+
+static runPredUpdate(data){
+
+  let db = new sqlite3.Database("stockx.db");
+
+  db.serialize(function () {
+    db.run("INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)", data, function (err) {
+      // error condition
+      if(err){
+        if(err.code == 'SQLITE_BUSY'){
+          console.log("Database is busy, retrying in 5 seconds...")
+          setInterval ( function() { 
+            scraper.updateprediction()
+          }, 1000 * 5);
+        }
+        else{
+          console.log(err)
+        }
+      }
+      else{
+        console.log("SUCCESS")
+      }
+    })
+  })
 }
 
+static updateprediction(){
+  const python = spawn('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3', ['./predictor.py']);
+  let result = ''
+  python.stdout.on('data', function (data) {
+    result = result + data.toString();
+    // let result2 = JSON.parse(result)
+    // console.log(result)
+    // console.log(result2)
+  })
+  python.on('close', function (code) {
+    result = JSON.parse(result)
+    console.log(result.yhat[0])
+    const sqlite3 = require("sqlite3").verbose();
+    let db = new sqlite3.Database("stockx.db");
+    let sql = "INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)";
+    for(var i = 0; i < result.length; i++){
+      let datatoinsert = [
+        9,
+        result.yhat[i],
+        result.ds[i]
+      ];
+      db.serialize(function() {
+        db.run(sql, datatoinsert)
+      })
+      
+    }
+    }
+
+  );
+
+  // return JSON.parse(result)
+
+}
+}
+
+// console.log(scraper.dataplay())
+scraper.updateprediction()
 // scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
