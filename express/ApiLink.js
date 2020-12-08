@@ -10,8 +10,6 @@ const spawn = require('child_process').spawn;
 
 axiosRetry(axios, { retries: 5 });
 
-
-
 export class scraper{
 
 headers = {
@@ -314,13 +312,10 @@ static updateSeriesSales(apidata, id){
           // error condition 
           if (err){
             if (err.code == 'SQLITE_BUSY') {
-              var isLocked = true
-              if(isLocked = true){
-                console.log("Database is busy, retrying in 5 seconds...")
-                setInterval ( function() { 
-                  this.updateSeriesSales(apidata, "af8ae222-4eff-4a2d-b674-c3592efa5252" )
-                }, 1000 * 5);
-              } 
+              console.log("Database is busy, retrying in 5 seconds...")
+              setInterval ( function() { 
+                this.updateSeriesSales(apidata, "af8ae222-4eff-4a2d-b674-c3592efa5252" )
+              }, 1000 * 5);
             }
             else{
               console.log(err)

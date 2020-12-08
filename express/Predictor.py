@@ -34,26 +34,29 @@ class suppress_stdout_stderr(object):
         for fd in self.null_fds + self.save_fds:
             os.close(fd)
 
+# returns sales from mym api
 def grabsales():
     r = requests.get("http://localhost:5000/api/sales")
     data = r.json()
     # print(data)
     return data["express"]
 
+# returns a r record of sales with their respective parsed dates
 def predictorRecord():
     arr = []
     for i in grabsales():
-        date = dp.parse(i["ProductActivity__createdAt"])
-        date = date.strftime('%S')
-        arr.append([date, i["ProductActivity__localAmount"], i["ProductActivity__shoeSize"]])
+        # date = dp.parse(i["ProductActivity__createdAt"])
+        # date = date.strftime('%S')
+        arr.append([i["ProductActivity__createdAt"], i["ProductActivity__localAmount"], i["ProductActivity__shoeSize"]])
     return arr
 
-
+# returns data from the series endpoint 
 def grabseries():
     r = requests.get("http://localhost:5000/api/series")
     data = r.json()["series"]
     return data
 
+# returns an an array of filtered sales ny size
 def filterarr(size, arr):
     if size == 0:
         return arr
@@ -64,6 +67,7 @@ def filterarr(size, arr):
             new.append(x)
     return new
 
+# returns the uuid of a particular size
 def findsz(arr, sz):
     for i in range(len(arr) -1):
         if arr[i].size == sz:
@@ -239,7 +243,10 @@ def outSample(path):
     pyplot.legend()
     pyplot.show()
 
-newjsonpredict(9, False)
+print("non-filtered:", predictorRecord())
+print("filtered:", filterarr(8, predictorRecord()))
+
+# newjsonpredict(9, False)
 # grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe", "11")
 sys.stdout.flush()
 
