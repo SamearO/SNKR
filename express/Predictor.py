@@ -85,19 +85,19 @@ def grabProductInfo(product, size):
         "accept-language": "en-US",
     }
     r = requests.get(url = product, headers = headers)
-    data = r.data
+    data = r
     variants = data.Product.children
     variantArray = []
     for key in variants:
-        variantArray.append({size : variants[key].lshoeSize, uuid: key, market: variants[key].market})
+        variantArray.append({"size" : variants[key].shoeSize, "uuid" : key, "market" : variants[key].market})
     print("Product Parsed: ",{
-        name : data["Product"].title,
-        image: data["Product"].media.imageUrl,
-        urlKey: data["Product"].urlKey,
-        pid: data["Product"].styleId,
-        uuid: data["Product"].uuid,
-        marketData: data["Product"].market,
-        variants: variantArray,
+        "name" : data["Product"].title,
+        "image" : data["Product"].media.imageUrl,
+        "urlKey" : data["Product"].urlKey,
+        "pid" : data["Product"].styleId,
+        "uuid" : data["Product"].uuid,
+        "marketData" : data["Product"].market,
+        "variants" : variantArray,
     })
     sizeid = findsz(variantArray, size)
     return sizeid
@@ -243,10 +243,21 @@ def outSample(path):
     pyplot.legend()
     pyplot.show()
 
-print("non-filtered:", predictorRecord())
-print("filtered:", filterarr(8, predictorRecord()))
+# print("non-filtered:", predictorRecord())
+# print("filtered:", filterarr(8, predictorRecord()))
 
 # newjsonpredict(9, False)
 # grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe", "11")
 sys.stdout.flush()
 
+headers = {
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
+    # "sec-fetch-dest": "none",
+    # "accept": "*/*",
+    # "sec-fetch-site": "cross-site",
+    # "sec-fetch-mode": "cors",
+    # "accept-language": "en-US",
+}
+r = requests.get(url = "https://stockx.com/air-jordan-1-retro-high-bred-toe", headers = headers)
+data = r.text
+print(data)
