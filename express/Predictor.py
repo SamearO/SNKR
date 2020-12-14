@@ -2,7 +2,7 @@ from pandas import read_csv, to_datetime, DataFrame, read_json
 from fbprophet import Prophet
 from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error, accuracy_score
-import csv, requests, sys, json, os 
+import csv, requests, sys, json, os, time
 import dateutil.parser as dp
 
 class suppress_stdout_stderr(object):
@@ -84,9 +84,10 @@ def grabProductInfo(product, size):
         "sec-fetch-mode": "cors",
         "accept-language": "en-US",
     }
+    url = "https://stockx.com/api/products/air-jordan-1-retro-high-bred-toe?includes=market&currency=GBP"
     r = requests.get(url = product, headers = headers)
-    data = r
-    variants = data.Product.children
+    data = r.json()
+    variants = data["Product"]["children"]
     variantArray = []
     for key in variants:
         variantArray.append({"size" : variants[key].shoeSize, "uuid" : key, "market" : variants[key].market})
@@ -152,7 +153,8 @@ def jsonpredict(size, info):
     df['ds'] = to_datetime(df['ds'], unit = 'ms')
     model = Prophet()
     # print(df)
-    model.fit(df)
+    with suppress_stdout_stderr():
+        model.fit(df)
     # define the period for which we want a prediction
     future = list()
     for x in range(10):
@@ -172,8 +174,7 @@ def jsonpredict(size, info):
     yPred = []
     for i in range (len(forecast)):
         yPred.append(round(forecast['yhat'][i]))
-
-
+    print(forecast.to_json())
 
 def inSample(path):
     # load data
@@ -247,17 +248,24 @@ def outSample(path):
 # print("filtered:", filterarr(8, predictorRecord()))
 
 # newjsonpredict(9, False)
+jsonpredict(10, False)
 # grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe", "11")
 sys.stdout.flush()
 
 headers = {
-    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
-    # "sec-fetch-dest": "none",
-    # "accept": "*/*",
-    # "sec-fetch-site": "cross-site",
-    # "sec-fetch-mode": "cors",
-    # "accept-language": "en-US",
-}
-r = requests.get(url = "https://stockx.com/air-jordan-1-retro-high-bred-toe", headers = headers)
-data = r.text
-print(data)
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36"}
+# r = requests.get(url = "https://stockx.com/api/products/air-jordan-1-retro-high-bred-toe?includes=market&currency=GBP", headers = headers)
+# print(r.status_code)
+# data = r.json()
+# print(data)
+
+# def handleException(url, headers):
+#     try: 
+#         r = requests.get(url, headers)
+#         return r.text
+#     except ConnectionError or ConnectionResetError or ConnectionAbortedError or ConnectionRefusedError:
+#         time.sleep(1)
+#         print("ABORTED")
+#         # handleException(url, headers)
+        
+# print(handleException("https://stockx.com/api/products/air-jordan-1-retro-high-bred-toe?includes=market&currency=GBP", headers))
