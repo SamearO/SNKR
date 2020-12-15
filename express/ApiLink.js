@@ -369,30 +369,29 @@ static updateDbFromSeriesData(id){
   })
 }
 
-static runPredUpdate(data){
+// static runPredUpdate(data){
 
-  let db = new sqlite3.Database("stockx.db");
+//   let db = new sqlite3.Database("stockx.db");
 
-  db.serialize(function () {
-    db.run("INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)", data, function (err) {
-      // error condition
-      if(err){
-        if(err.code == 'SQLITE_BUSY'){
-          console.log("Database is busy, retrying in 5 seconds...")
-          setInterval ( function() { 
-            scraper.updateprediction()
-          }, 1000 * 5);
-        }
-        else{
-          console.log(err)
-        }
-      }
-      else{
-        console.log("SUCCESS")
-      }
-    })
-  })
-}
+  // db.serialize(function () {
+  //   db.run("INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)", data, function (err) {
+  //     // error condition
+  //     if(err){
+  //       if(err.code == 'SQLITE_BUSY'){
+  //         console.log("Database is busy, retrying in 5 seconds...")
+  //         setInterval ( function() { 
+  //           scraper.updateprediction()
+  //         }, 1000 * 5);
+  //       }
+  //       else{
+  //         console.log(err)
+  //       }
+  //     }
+  //     else{
+  //       console.log("SUCCESS")
+  //     }
+  //   })
+  // })
 
 static findInterpreter(){
   // home directory for interpreter
@@ -416,20 +415,35 @@ static updatePrediction(){
   python.on('close', function (code) {
     // console.log(result)
     result = JSON.parse(result)
+    // console.log(result)
     const sqlite3 = require("sqlite3").verbose();
     let db = new sqlite3.Database("stockx.db");
     let sql = "INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)";
-    for(var i = 0; i < result.length; i++){
+    let len = (Object.keys(result.yhat).length)
+    for(var i = 0; i < len; i++){
       let datatoinsert = [
         9,
         result.yhat[i],
         result.ds[i]
       ];
-      db.serialize(function() {
-        runPredUpdate(datatoinsert)
-      })
-      
+      db.serialize(function () {
+        db.run(sql, datatoinsert, function (err) {
+          // error condition 
+          if (err){
+            if (err.code == 'SQLITE_BUSY') {
+              console.log("Database is busy, retrying in 5 seconds...")
+              setInterval ( function() { 
+                this.updatePrediction()
+              }, 1000 * 5);
+            }
+            else{
+              console.log(err)
+            }
+          };
+        });
+      });
     }
+    console.log("PREDICTION TABLE UPDATED")
     }
 
   );
@@ -438,7 +452,7 @@ static updatePrediction(){
 
 }
 }
-
+scraper.updatePrediction()
 // console.log(scraper.dataplay())
 // scraper.grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe")
 // scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")

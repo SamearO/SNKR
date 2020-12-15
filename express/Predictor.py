@@ -47,7 +47,8 @@ def predictorRecord():
     for i in grabsales():
         # date = dp.parse(i["ProductActivity__createdAt"])
         # date = date.strftime('%S')
-        arr.append([i["ProductActivity__createdAt"], i["ProductActivity__localAmount"], i["ProductActivity__shoeSize"]])
+        date = (i["ProductActivity__createdAt"])[:-6]
+        arr.append([date, i["ProductActivity__localAmount"], i["ProductActivity__shoeSize"]])
     return arr
 
 # returns data from the series endpoint 
@@ -105,10 +106,12 @@ def grabProductInfo(product, size):
 
 def newjsonpredict(size, info):
     filtered = filterarr(size, predictorRecord())
+    # print(dp.parser.parse(filtered[0][0]))
+    print(filtered)
     df = DataFrame.from_records(filtered)
     df.columns = ['ds', 'y', 'sz']
-    df['ds'] = to_datetime(df['ds'], unit = 'ms')
-    model = Prophet()
+    df['ds'] = to_datetime(df['ds'])
+    model = Prophet(yearly_seasonality=True)
     with suppress_stdout_stderr():
         model.fit(df)
 
@@ -150,8 +153,10 @@ def jsonpredict(size, info):
     json = grabseries()
     df = DataFrame.from_dict(json)
     df.columns = ['id', 'ds', 'y']
+    # print(df['ds'][0])
     df['ds'] = to_datetime(df['ds'], unit = 'ms')
-    model = Prophet()
+    # print(df['ds'][0])
+    model = Prophet(yearly_seasonality=True)
     # print(df)
     with suppress_stdout_stderr():
         model.fit(df)
@@ -165,7 +170,6 @@ def jsonpredict(size, info):
     # use the model to make a forecast
     forecast = model.predict(future)
     # summarize the forecast
-    # print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
     # print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']]
     yTrue = []
     for x in range(10):
@@ -174,6 +178,11 @@ def jsonpredict(size, info):
     yPred = []
     for i in range (len(forecast)):
         yPred.append(round(forecast['yhat'][i]))
+    if(info):
+        print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].head())
+        print("Actual: ", yTrue)
+        print("Predicted: ", yPred)
+        pyplot.show()
     print(forecast.to_json())
 
 def inSample(path):
@@ -247,8 +256,8 @@ def outSample(path):
 # print("non-filtered:", predictorRecord())
 # print("filtered:", filterarr(8, predictorRecord()))
 
-# newjsonpredict(9, False)
-jsonpredict(10, False)
+# newjsonpredict(9, True)
+jsonpredict(9, False)
 # grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe", "11")
 sys.stdout.flush()
 

@@ -24,8 +24,20 @@ function isJson(str) {
 }
 
 app.get('/api/pytest', (req, res) => {
-  res.send(scraper.dataplay())
-  console.log("DONE")
+  const sqlite3 = require("sqlite3").verbose();
+  // open the database
+  let db = new sqlite3.Database("stockx.db");
+  // gets all data from ProductActivity table
+  let sql = "SELECT * FROM PREDICTION";
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    res.send({ prediction: rows });
+  });
+  // close the database connection
+  db.close();
+  // res.send({ express: hello() });
 })
 
 // code for my api endpoint that displays data from my database
@@ -102,6 +114,10 @@ setTimeout(function() {
   console.log("")
   scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
 }, 1000 * 50);
+setTimeout(function() {
+  console.log("")
+  scraper.updatePrediction()
+}, 1000 * 45);
 setInterval ( function() { 
   console.log("")
   scraper.updateDbFromApi2()
@@ -114,6 +130,10 @@ setInterval ( function() {
   console.log("")
   scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")
 }, 1000 * 60 * 45);
+setInterval ( function() { 
+  console.log("")
+  scraper.updatePrediction()
+}, 1000 * 60 * 48);
 
 // when server is started, logs this message on the console
 app.listen(port, () => console.log(`Server Started On: ${port}`));
