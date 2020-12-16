@@ -204,8 +204,6 @@ export const MyAreaChart = (props) => {
       }}
     />
   <Tooltip />
-  {/* <Legend /> */}
-  {/* <CartesianGrid strokeDasharray="3 3" /> */}
   <Area type="monotone" dataKey="ProductActivity__localAmount" stroke="##8884d8" fill="#DC143C" data={data} />
   <Line type="monotone" dataKey="yhat" stroke="#ff7300" data={pred}/>
 </ComposedChart>

@@ -450,9 +450,8 @@ static updatePrediction(){
 
   // return JSON.parse(result)
 
-}
-}
-scraper.updatePrediction()
+}}
+// scraper.updatePrediction()
 // console.log(scraper.dataplay())
 // scraper.grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe")
 // scraper.updateDbFromSeriesData("af8ae222-4eff-4a2d-b674-c3592efa5252")

@@ -257,7 +257,9 @@ def outSample(path):
 # print("filtered:", filterarr(8, predictorRecord()))
 
 # newjsonpredict(9, True)
-jsonpredict(9, False)
+jsonpredict(int((sys.stdin.readlines())), False)
+# jsonpredict(9, False)
+
 # grabProductInfo("https://stockx.com/air-jordan-1-retro-high-bred-toe", "11")
 sys.stdout.flush()
 

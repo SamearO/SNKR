@@ -2,6 +2,7 @@ import { Avatar, CardActions, CardContent, Grid, flexWrap } from "@material-ui/c
 import React, {useState, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import MyAreaChart from "./MyAreaChart.js";
+import emailButton from "./Email"
 import Filter from "./Filter.js";
 import moment from "moment";
 import { AttributeDisplay } from  "./Attributes.js"
@@ -120,6 +121,8 @@ export default function CenteredGrid() {
             </CardBody>
           </Card>
         </GridItem>
+
+        <emailButton></emailButton>
         
 
         <GridItem xs={12}>
