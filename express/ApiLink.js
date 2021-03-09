@@ -205,8 +205,6 @@ axios({
     }
     else {
       console.log("ERROR SETTING UP REQUEST")
-      // Something happened in setting up the request that triggered an Error
-      // console.log('Error', err.message);
     }
   })
 }       
@@ -368,30 +366,6 @@ static updateDbFromSeriesData(id){
     // console.log(err)
   })
 }
-
-// static runPredUpdate(data){
-
-//   let db = new sqlite3.Database("stockx.db");
-
-  // db.serialize(function () {
-  //   db.run("INSERT INTO PREDICTION (Size, Price, Date) VALUES (?,?,?)", data, function (err) {
-  //     // error condition
-  //     if(err){
-  //       if(err.code == 'SQLITE_BUSY'){
-  //         console.log("Database is busy, retrying in 5 seconds...")
-  //         setInterval ( function() { 
-  //           scraper.updateprediction()
-  //         }, 1000 * 5);
-  //       }
-  //       else{
-  //         console.log(err)
-  //       }
-  //     }
-  //     else{
-  //       console.log("SUCCESS")
-  //     }
-  //   })
-  // })
 
 static findInterpreter(){
   // home directory for interpreter

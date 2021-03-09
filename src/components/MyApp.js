@@ -6,6 +6,8 @@ import emailButton from "./Email"
 import Filter from "./Filter.js";
 import moment from "moment";
 import { AttributeDisplay } from  "./Attributes.js"
+import TextField from '@material-ui/core/TextField';
+
 
 // core components
 // import Button from "./imported/CustomButtons/Button.js";
@@ -89,6 +91,7 @@ export default function CenteredGrid() {
       color: 'white'
     }
 
+
   return (
     <div style={darkStyling}>
       <Grid container spacing={1}  direction = "row">
@@ -122,7 +125,16 @@ export default function CenteredGrid() {
           </Card>
         </GridItem>
 
-        <emailButton></emailButton>
+        <GridItem className={darkStyling}>
+        <form className={{backgroundColor: "#ffffff"}}>
+        <div>
+          <TextField
+            defaultValue="Use ME"
+            helperText="Incorrect entry."
+          />
+        </div>
+      </form>
+        </GridItem>
         
 
         <GridItem xs={12}>

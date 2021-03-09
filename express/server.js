@@ -15,10 +15,10 @@ var cors = require("cors");
 const { response } = require("express");
 app.use(cors()); // Use this after the variable declaration
 
-let python = spawn(scraper.findInterpreter(), ['./Predictor.py'])
-let data = 9 // placeholder for size hook
-python.stdin.write(data.toString())
-py.stdin.end()
+// let python = spawn(scraper.findInterpreter(), ['./Predictor.py'])
+// let data = 9 // placeholder for size hook
+// python.stdin.write(data.toString())
+// py.stdin.end()
 
 app.get('/api/pytest', (req, res) => {
   const sqlite3 = require("sqlite3").verbose();
