@@ -18,7 +18,7 @@
     "react": "^16.13.1",
     "react-circular-progressbar": "^2.0.3",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "^5.0.1",
     "recharts": "^1.8.5",
     "sqlite3": "^5.0.0",
     "superagent": "^5.3.1",
